@@ -1,0 +1,30 @@
+---
+- name: Install and start Apache web server
+  hosts: servers
+  become: yes
+
+  tasks:
+    - name: Install Apache package
+      yum:
+        name: httpd
+        state: present
+
+    - name: Start Apache service
+      service:
+        name: httpd
+        state: started
+        enabled: yes
+
+    - name: Allow HTTP service in firewall
+      firewalld:
+        service: http
+        permanent: yes
+        state: enabled
+      notify: restart firewalld
+
+  handlers:
+    - name: restart firewalld
+      service:
+        name: firewalld
+        state: restarted
+
